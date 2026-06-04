@@ -32,8 +32,8 @@ nav {
 
 /* ── HERO ── */
 .hero {
-  min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr;
-  align-items: center; padding: 7rem 4rem 4rem; position: relative; overflow: hidden;
+  min-height: 100vh; display: grid; grid-template-columns: 1fr 1.2fr;
+  align-items: center; padding: 7rem 4rem 4rem; position: relative;
   background-image: url('hero2.jpeg');
   background-size: cover;
   background-position: center;
@@ -62,6 +62,15 @@ nav {
 .btn-outline { background: transparent; color: var(--warm-dark); padding: 0.9rem 2rem; border: 1px solid var(--warm-dark); cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none; display: inline-block; transition: all 0.3s; border-radius: 2px; }
 .btn-outline:hover { background: var(--warm-dark); color: var(--gold-pale); }
 
+
+.product-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
 /* Hero Visual */
 .hero-right { position: relative; z-index: 2; display: flex; justify-content: center; align-items: center; }
 .hero-visual { width: 420px; height: 480px; position: relative; }
@@ -72,12 +81,23 @@ nav {
   box-shadow: 0 30px 80px rgba(44,31,14,0.25);
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; overflow: hidden;
 }
+
+.hero-img {
+  width: 130%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  position: relative;
+  z-index: 2;
+  filter: drop-shadow(0 20px 50px rgba(44,31,14,0.2));
+}
 .hero-card-main::before { content: ''; position: absolute; inset: 12px; border: 1px solid rgba(255,255,255,0.5); pointer-events: none; }
 .booklet-icon { font-size: 4rem; opacity: 0.6; }
 .booklet-lines { display: flex; flex-direction: column; gap: 0.4rem; align-items: center; }
 .booklet-line { height: 1px; background: rgba(44,31,14,0.25); border-radius: 1px; }
 .hero-card-accent { width: 180px; height: 220px; background: var(--warm-dark); border-radius: 4px; position: absolute; bottom: 0; right: 0; box-shadow: 0 20px 50px rgba(44,31,14,0.3); display: flex; align-items: center; justify-content: center; }
 .hero-card-accent-inner { width: 140px; height: 180px; border: 1px solid rgba(201,168,76,0.4); display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 0.7rem; letter-spacing: 0.2em; color: var(--gold-pale); text-align: center; line-height: 2; text-transform: uppercase; }
+
 
 /* ── CATEGORIES ── */
 .categories { padding: 5rem 4rem; background: var(--warm-dark); }
@@ -183,7 +203,7 @@ footer { background: #1A1007; padding: 3rem 4rem; display: flex; align-items: ce
 .products-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.8rem; margin-top: 3rem; }
 .product-card { background: white; border-radius: 4px; overflow: hidden; border: 1px solid rgba(201,168,76,0.15); transition: all 0.35s; cursor: pointer; }
 .product-card:hover { transform: translateY(-5px); box-shadow: 0 20px 50px rgba(44,31,14,0.12); border-color: rgba(201,168,76,0.4); }
-.product-img { width: 100%; height: 220px; background: linear-gradient(135deg, #F5E6C0 0%, #EDD89A 60%, #C9A84C 100%); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+.product-img { width: 100%; height: 520px; background: linear-gradient(135deg, #F5E6C0 0%, #EDD89A 60%, #C9A84C 100%); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
 .product-img::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 60%, rgba(44,31,14,0.08)); }
 .product-img-placeholder { font-size: 3.5rem; opacity: 0.5; }
 .product-tag { position: absolute; top: 0.8rem; left: 0.8rem; background: var(--warm-dark); color: var(--gold-pale); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.25rem 0.7rem; border-radius: 2px; z-index: 1; }
@@ -234,10 +254,9 @@ footer { background: #1A1007; padding: 3rem 4rem; display: flex; align-items: ce
   .booklet-icon { font-size: 2.8rem; }
   .hero-card-accent { width: 120px; height: 150px; }
   .hero-card-accent-inner { width: 94px; height: 120px; font-size: 0.6rem; }
-
+.hero-img { width: 100%; }
   .categories { padding: 4rem 2rem; }
   .cat-grid { grid-template-columns: 1fr; gap: 1rem; }
-
   .how { padding: 4rem 2rem; }
   .how-grid { grid-template-columns: 1fr; gap: 2rem; }
 
@@ -283,7 +302,7 @@ footer { background: #1A1007; padding: 3rem 4rem; display: flex; align-items: ce
 
   .testimonials { padding: 3rem 1.2rem; }
   .testi-card { padding: 1.5rem; }
-
+.product-img { height: 180px; }
   .faq { padding: 3rem 1.2rem; }
   .faq-q { font-size: 1rem; }
 
@@ -296,7 +315,7 @@ footer { background: #1A1007; padding: 3rem 4rem; display: flex; align-items: ce
   .pricing { padding: 3rem 1.2rem; }
 
   .products { padding: 3rem 1.2rem; }
-  .products-grid { grid-template-columns: 1fr; }
+  .products-grid { grid-template-columns: repeat(2, 1fr); }
 
   footer { padding: 2rem 1.2rem; }
 }
