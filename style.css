@@ -7,6 +7,28 @@
 html { scroll-behavior: smooth; }
 body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); overflow-x: hidden; }
 
+
+.cat-card-img-wrap {
+  width: 100%;
+  height: 450px;
+  overflow: hidden;
+  border-radius: 2px;
+  margin-bottom: 0.5rem;
+}
+
+.cat-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  transition: transform 0.4s;
+}
+
+.cat-card:hover .cat-card-img {
+  transform: scale(1.05);
+}
+
 /* ── NAVBAR ── */
 nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
