@@ -250,15 +250,10 @@ footer {
 .footer-links a:hover { color: var(--gold); }
 .footer-copy { font-size: 0.75rem; color: rgba(251,246,238,0.25); }
 
-/* ── WHATSAPP FLOAT ── */
-.wa-float {
-  position: fixed; bottom: 2rem; right: 2rem; z-index: 999;
-  width: 56px; height: 56px; background: #25D366; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 6px 24px rgba(37,211,102,0.45); text-decoration: none;
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-.wa-float:hover { transform: scale(1.1); box-shadow: 0 8px 30px rgba(37,211,102,0.55); }
+
+/* ── insta FLOAT ── */
+.wa-float { position: fixed; bottom: 2rem; right: 2rem; z-index: 999; width: 56px; height: 56px; background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 24px rgba(214,36,159,0.45); text-decoration: none; transition: transform 0.3s, box-shadow 0.3s; }
+.wa-float:hover { transform: scale(1.1); box-shadow: 0 8px 30px rgba(214,36,159,0.6); }
 .wa-float svg { width: 28px; height: 28px; fill: white; }
 
 /* ── ANIMATIONS ── */

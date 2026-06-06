@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin — Golden Memories</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --gold: #C9A84C; --gold-light: #E8C97A; --gold-pale: #F5E6C0;
+      --cream: #FBF6EE; --warm-dark: #2C1F0E; --warm-mid: #6B4F2A;
+      --text: #3A2C1A; --muted: #8B7355;
+      --red: #c0392b; --green: #27ae60;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: #1A1007; color: var(--cream); min-height: 100vh; }
+
+    /* ── LOGIN ── */
+    #login-screen {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      background: #1A1007;
+      position: relative; overflow: hidden;
+    }
+    #login-screen::before {
+      content: ''; position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(201,168,76,0.1) 0%, transparent 65%);
+      border-radius: 50%; pointer-events: none;
+    }
+    .login-box {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(201,168,76,0.2);
+      border-radius: 6px; padding: 3rem;
+      width: 100%; max-width: 400px;
+      position: relative; z-index: 2;
+      text-align: center;
+    }
+    .login-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 600; color: var(--cream); margin-bottom: 0.3rem; }
+    .login-logo span { color: var(--gold); }
+    .login-sub { font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 2rem; }
+    .login-box input {
+      width: 100%; padding: 0.85rem 1rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(201,168,76,0.2);
+      border-radius: 3px; color: var(--cream);
+      font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+      margin-bottom: 1rem; outline: none; transition: border 0.3s;
+    }
+    .login-box input:focus { border-color: var(--gold); }
+    .login-box input::placeholder { color: rgba(251,246,238,0.25); }
+    .btn-gold {
+      width: 100%; padding: 0.85rem;
+      background: var(--gold); color: var(--warm-dark);
+      border: none; border-radius: 3px; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; font-size: 0.8rem;
+      font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+      transition: background 0.3s;
+    }
+    .btn-gold:hover { background: var(--gold-light); }
+    .login-error { color: #e74c3c; font-size: 0.8rem; margin-top: 0.8rem; display: none; }
+
+    /* ── ADMIN SHELL ── */
+    #admin-shell { display: none; min-height: 100vh; }
+
+    .admin-nav {
+      background: #110A03; border-bottom: 1px solid rgba(201,168,76,0.15);
+      padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .admin-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; color: var(--cream); }
+    .admin-logo span { color: var(--gold); }
+    .admin-logo small { font-family: 'DM Sans', sans-serif; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); display: block; margin-top: -2px; }
+    .logout-btn {
+      background: rgba(192,57,43,0.15); color: #e74c3c;
+      border: 1px solid rgba(192,57,43,0.3); border-radius: 3px;
+      padding: 0.4rem 1rem; font-size: 0.72rem; letter-spacing: 0.1em;
+      text-transform: uppercase; cursor: pointer; font-family: 'DM Sans', sans-serif;
+      transition: all 0.3s;
+    }
+    .logout-btn:hover { background: rgba(192,57,43,0.3); }
+
+    .admin-body { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 60px); }
+
+    /* ── SIDEBAR ── */
+    .admin-sidebar {
+      background: #110A03; border-right: 1px solid rgba(201,168,76,0.1);
+      padding: 1.5rem 0;
+    }
+    .sidebar-label { font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); padding: 0 1.2rem; margin-bottom: 0.5rem; margin-top: 1rem; }
+    .sidebar-item {
+      display: flex; align-items: center; gap: 0.7rem;
+      padding: 0.75rem 1.2rem; cursor: pointer;
+      font-size: 0.83rem; color: rgba(251,246,238,0.5);
+      transition: all 0.25s; border-left: 2px solid transparent;
+    }
+    .sidebar-item:hover { color: var(--cream); background: rgba(201,168,76,0.05); }
+    .sidebar-item.active { color: var(--gold); border-left-color: var(--gold); background: rgba(201,168,76,0.07); }
+    .sidebar-icon { font-size: 1rem; width: 20px; text-align: center; }
+
+    /* ── MAIN CONTENT ── */
+    .admin-main { padding: 2rem; background: #1A1007; overflow-y: auto; }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    .panel-header { margin-bottom: 2rem; }
+    .panel-title { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 300; color: var(--cream); }
+    .panel-title em { font-style: italic; color: var(--gold); }
+    .panel-sub { font-size: 0.82rem; color: var(--muted); margin-top: 0.3rem; }
+
+    /* ── STATS ── */
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; }
+    .stat-card {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(201,168,76,0.15);
+      border-radius: 4px; padding: 1.5rem;
+    }
+    .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; color: var(--gold); font-weight: 300; line-height: 1; }
+    .stat-label { font-size: 0.75rem; color: var(--muted); margin-top: 0.3rem; letter-spacing: 0.05em; }
+
+    /* ── ADD PRODUCT FORM ── */
+    .form-card {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(201,168,76,0.15);
+      border-radius: 4px; padding: 1.5rem; margin-bottom: 2rem;
+    }
+    .form-card-title { font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.2rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-group.full { grid-column: 1 / -1; }
+    label { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    input[type="text"], input[type="file"], select, textarea {
+      padding: 0.7rem 0.9rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(201,168,76,0.2);
+      border-radius: 3px; color: var(--cream);
+      font-family: 'DM Sans', sans-serif; font-size: 0.85rem;
+      outline: none; transition: border 0.3s; width: 100%;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--gold); }
+    input::placeholder, textarea::placeholder { color: rgba(251,246,238,0.2); }
+    select option { background: #1A1007; color: var(--cream); }
+    textarea { resize: vertical; min-height: 80px; }
+
+    /* Image upload */
+    .img-upload-area {
+      border: 2px dashed rgba(201,168,76,0.3); border-radius: 4px;
+      padding: 2rem; text-align: center; cursor: pointer;
+      transition: all 0.3s; position: relative;
+    }
+    .img-upload-area:hover { border-color: var(--gold); background: rgba(201,168,76,0.04); }
+    .img-upload-area input[type="file"] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer;
+      padding: 0; border: none; background: none;
+    }
+    .upload-icon { font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.5; }
+    .upload-text { font-size: 0.8rem; color: var(--muted); }
+    .upload-hint { font-size: 0.7rem; color: rgba(251,246,238,0.2); margin-top: 0.3rem; }
+    .img-preview { width: 100%; max-height: 160px; object-fit: cover; border-radius: 3px; margin-top: 0.8rem; display: none; }
+
+    .form-actions { display: flex; gap: 0.8rem; margin-top: 1rem; }
+    .btn-submit {
+      padding: 0.7rem 1.8rem; background: var(--gold); color: var(--warm-dark);
+      border: none; border-radius: 3px; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; font-size: 0.75rem;
+      font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+      transition: background 0.3s;
+    }
+    .btn-submit:hover { background: var(--gold-light); }
+    .btn-cancel {
+      padding: 0.7rem 1.4rem; background: transparent; color: var(--muted);
+      border: 1px solid rgba(201,168,76,0.2); border-radius: 3px; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; font-size: 0.75rem;
+      letter-spacing: 0.1em; text-transform: uppercase; transition: all 0.3s;
+    }
+    .btn-cancel:hover { border-color: var(--muted); color: var(--cream); }
+
+    /* ── PRODUCTS LIST ── */
+    .products-list-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+    .admin-product-card {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(201,168,76,0.12);
+      border-radius: 4px; overflow: hidden; transition: border 0.3s;
+    }
+    .admin-product-card:hover { border-color: rgba(201,168,76,0.35); }
+    .admin-card-img {
+      width: 100%; height: 160px; object-fit: cover; object-position: center top;
+      display: block; background: linear-gradient(135deg, #F5E6C0, #C9A84C);
+    }
+    .admin-card-img-placeholder {
+      width: 100%; height: 160px;
+      background: linear-gradient(135deg, rgba(201,168,76,0.1), rgba(201,168,76,0.05));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; opacity: 0.3;
+    }
+    .admin-card-info { padding: 0.9rem; }
+    .admin-card-tag {
+      font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase;
+      background: rgba(201,168,76,0.15); color: var(--gold);
+      padding: 0.2rem 0.5rem; border-radius: 2px; display: inline-block; margin-bottom: 0.4rem;
+    }
+    .admin-card-name { font-family: 'Cormorant Garamond', serif; font-size: 1rem; color: var(--cream); margin-bottom: 0.3rem; }
+    .admin-card-desc { font-size: 0.72rem; color: var(--muted); line-height: 1.5; margin-bottom: 0.8rem; }
+    .admin-card-actions { display: flex; gap: 0.5rem; }
+    .btn-edit {
+      flex: 1; padding: 0.45rem; background: rgba(201,168,76,0.1);
+      border: 1px solid rgba(201,168,76,0.25); border-radius: 2px;
+      color: var(--gold); font-size: 0.68rem; letter-spacing: 0.08em;
+      text-transform: uppercase; cursor: pointer; font-family: 'DM Sans', sans-serif;
+      transition: all 0.25s; text-align: center;
+    }
+    .btn-edit:hover { background: rgba(201,168,76,0.2); }
+    .btn-delete {
+      flex: 1; padding: 0.45rem; background: rgba(192,57,43,0.08);
+      border: 1px solid rgba(192,57,43,0.25); border-radius: 2px;
+      color: #e74c3c; font-size: 0.68rem; letter-spacing: 0.08em;
+      text-transform: uppercase; cursor: pointer; font-family: 'DM Sans', sans-serif;
+      transition: all 0.25s; text-align: center;
+    }
+    .btn-delete:hover { background: rgba(192,57,43,0.2); }
+
+    .empty-msg {
+      grid-column: 1 / -1; text-align: center; padding: 3rem;
+      color: var(--muted); font-size: 0.85rem;
+    }
+    .empty-msg .empty-icon { font-size: 2.5rem; margin-bottom: 0.8rem; opacity: 0.3; }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 9999;
+      background: var(--warm-dark); border: 1px solid rgba(201,168,76,0.3);
+      border-left: 3px solid var(--gold); border-radius: 4px;
+      padding: 0.9rem 1.4rem; font-size: 0.82rem; color: var(--cream);
+      transform: translateY(100px); opacity: 0; transition: all 0.35s;
+      pointer-events: none;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.error { border-left-color: #e74c3c; }
+
+    /* Change password */
+    .settings-card {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(201,168,76,0.15);
+      border-radius: 4px; padding: 1.5rem; max-width: 400px;
+    }
+
+@media (max-width: 700px) {
+
+  .admin-body {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-sidebar {
+    display: flex;
+    overflow-x: auto;
+    border-right: none;
+    border-bottom: 1px solid rgba(201,168,76,0.1);
+    padding: 0.5rem;
+    gap: 0.5rem;
+    background: #110A03;
+  }
+
+  .sidebar-label {
+    display: none;
+  }
+
+  .sidebar-item {
+    white-space: nowrap;
+    border-left: none;
+    border-bottom: 2px solid transparent;
+    padding: 0.7rem 1rem;
+    flex-shrink: 0;
+  }
+
+  .sidebar-item.active {
+    border-bottom-color: var(--gold);
+  }
+
+  .admin-main {
+    padding: 1rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">Golden <span>Memories</span></div>
+    <div class="login-sub">Admin Panel</div>
+    <input type="password" id="pw-input" placeholder="Enter password" />
+    <button class="btn-gold" onclick="doLogin()">Login</button>
+    <div class="login-error" id="login-error">Incorrect password. Try again.</div>
+  </div>
+</div>
+
+<!-- ADMIN SHELL -->
+<div id="admin-shell">
+
+  <nav class="admin-nav">
+    <div class="admin-logo">Golden <span>Memories</span> <small>Admin Panel</small></div>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </nav>
+
+  <div class="admin-body">
+
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar">
+      <div class="sidebar-label">Overview</div>
+      <div class="sidebar-item active" onclick="showPanel('dashboard', this)">
+        <span class="sidebar-icon">📊</span> Dashboard
+      </div>
+      <div class="sidebar-label">Categories</div>
+      <div class="sidebar-item" onclick="showPanel('booklets', this)">
+        <span class="sidebar-icon">📖</span> Nikah Booklets
+      </div>
+      <div class="sidebar-item" onclick="showPanel('frames', this)">
+        <span class="sidebar-icon">🖼️</span> Nikah Frames
+      </div>
+      <div class="sidebar-item" onclick="showPanel('occasions', this)">
+        <span class="sidebar-icon">✨</span> Special Occasions
+      </div>
+      <div class="sidebar-label">Account</div>
+      <div class="sidebar-item" onclick="showPanel('settings', this)">
+        <span class="sidebar-icon">⚙️</span> Settings
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="admin-main">
+
+      <!-- DASHBOARD -->
+      <div class="panel active" id="panel-dashboard">
+        <div class="panel-header">
+          <div class="panel-title">Welcome back <em>✦</em></div>
+          <div class="panel-sub">Manage your Golden Memories products from here.</div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-num" id="stat-booklets">0</div>
+            <div class="stat-label">Nikah Booklets</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="stat-frames">0</div>
+            <div class="stat-label">Nikah Frames</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="stat-occasions">0</div>
+            <div class="stat-label">Special Occasions</div>
+          </div>
+        </div>
+        <div class="form-card">
+          <div class="form-card-title">Quick Tips</div>
+          <p style="font-size:0.82rem;color:var(--muted);line-height:1.8;">
+            ✦ Go to a category from the sidebar to add, edit or delete products.<br>
+            ✦ Images are stored in the browser — changes show on the live site immediately.<br>
+            ✦ You can change your password anytime from Settings.
+          </p>
+        </div>
+      </div>
+
+      <!-- BOOKLETS PANEL -->
+      <div class="panel" id="panel-booklets">
+        <div class="panel-header">
+          <div class="panel-title">Nikah <em>Booklets</em></div>
+          <div class="panel-sub">Add, edit or remove booklet products.</div>
+        </div>
+        <div id="form-booklets"></div>
+        <div class="products-list-grid" id="list-booklets"></div>
+      </div>
+
+      <!-- FRAMES PANEL -->
+      <div class="panel" id="panel-frames">
+        <div class="panel-header">
+          <div class="panel-title">Nikah <em>Frames</em></div>
+          <div class="panel-sub">Add, edit or remove frame products.</div>
+        </div>
+        <div id="form-frames"></div>
+        <div class="products-list-grid" id="list-frames"></div>
+      </div>
+
+      <!-- OCCASIONS PANEL -->
+      <div class="panel" id="panel-occasions">
+        <div class="panel-header">
+          <div class="panel-title">Special <em>Occasions</em></div>
+          <div class="panel-sub">Add, edit or remove special occasion products.</div>
+        </div>
+        <div id="form-occasions"></div>
+        <div class="products-list-grid" id="list-occasions"></div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="panel" id="panel-settings">
+        <div class="panel-header">
+          <div class="panel-title">Settings <em>⚙</em></div>
+          <div class="panel-sub">Change your admin password.</div>
+        </div>
+        <div class="settings-card">
+          <div class="form-card-title" style="margin-bottom:1rem;">Change Password</div>
+          <div class="form-group" style="margin-bottom:1rem;">
+            <label>Current Password</label>
+            <input type="password" id="cur-pw" placeholder="Current password" />
+          </div>
+          <div class="form-group" style="margin-bottom:1rem;">
+            <label>New Password</label>
+            <input type="password" id="new-pw" placeholder="New password" />
+          </div>
+          <div class="form-group" style="margin-bottom:1.2rem;">
+            <label>Confirm New Password</label>
+            <input type="password" id="conf-pw" placeholder="Confirm new password" />
+          </div>
+          <button class="btn-submit" onclick="changePassword()">Update Password</button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ──
+const DEFAULT_PASSWORD = 'goldenhourr';
+const CATEGORY_TAGS = {
+  booklets: ['Classic','Modern','Floral','Premium'],
+  frames:   ['Arch','Classic','Modern','Premium'],
+  occasions:['Birthday','Aqiqah','Walima','Premium']
+};
+
+// ── AUTH ──
+function getPassword() { return localStorage.getItem('gm_password') || DEFAULT_PASSWORD; }
+
+function doLogin() {
+  const val = document.getElementById('pw-input').value;
+  if (val === getPassword()) {
+    localStorage.setItem('gm_authed', '1');
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('admin-shell').style.display = 'block';
+    initAdmin();
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+  }
+}
+document.getElementById('pw-input').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+function logout() {
+  localStorage.removeItem('gm_authed');
+  location.reload();
+}
+
+function changePassword() {
+  const cur = document.getElementById('cur-pw').value;
+  const nw  = document.getElementById('new-pw').value;
+  const cf  = document.getElementById('conf-pw').value;
+  if (cur !== getPassword()) return showToast('Current password is wrong.', true);
+  if (!nw) return showToast('New password cannot be empty.', true);
+  if (nw !== cf) return showToast('Passwords do not match.', true);
+  localStorage.setItem('gm_password', nw);
+  document.getElementById('cur-pw').value = '';
+  document.getElementById('new-pw').value = '';
+  document.getElementById('conf-pw').value = '';
+  showToast('Password updated successfully!');
+}
+
+// Auto-login if already authed
+if (localStorage.getItem('gm_authed') === '1') {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('admin-shell').style.display = 'block';
+  initAdmin();
+}
+
+// ── DATA ──
+function getProducts(cat) {
+  try { return JSON.parse(localStorage.getItem('gm_products_' + cat) || '[]'); }
+  catch { return []; }
+}
+function saveProducts(cat, arr) {
+  localStorage.setItem('gm_products_' + cat, JSON.stringify(arr));
+}
+
+// ── PANELS ──
+function showPanel(name, el) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  el.classList.add('active');
+  if (['booklets','frames','occasions'].includes(name)) renderCategory(name);
+  if (name === 'dashboard') updateStats();
+}
+
+function updateStats() {
+  ['booklets','frames','occasions'].forEach(cat => {
+    document.getElementById('stat-' + cat).textContent = getProducts(cat).length;
+  });
+}
+
+// ── RENDER CATEGORY ──
+let editingId = { booklets: null, frames: null, occasions: null };
+
+function renderCategory(cat) {
+  renderForm(cat);
+  renderList(cat);
+}
+
+function renderForm(cat) {
+  const tags = CATEGORY_TAGS[cat];
+  const isEditing = editingId[cat] !== null;
+  const product = isEditing ? getProducts(cat).find(p => p.id === editingId[cat]) : null;
+
+  const tagOptions = tags.map(t =>
+    `<option value="${t.toLowerCase()}" ${product && product.tag === t.toLowerCase() ? 'selected' : ''}>${t}</option>`
+  ).join('');
+
+  document.getElementById('form-' + cat).innerHTML = `
+    <div class="form-card" style="margin-bottom:1.5rem;">
+      <div class="form-card-title">${isEditing ? '✏️ Edit Product' : '+ Add New Product'}</div>
+      <input type="hidden" id="${cat}-edit-id" value="${isEditing ? product.id : ''}" />
+      <div class="form-row">
+        <div class="form-group">
+          <label>Product Name</label>
+          <input type="text" id="${cat}-name" placeholder="e.g. Classic Nikah Booklet" value="${product ? product.name : ''}" />
+        </div>
+        <div class="form-group">
+          <label>Tag / Category</label>
+          <select id="${cat}-tag">${tagOptions}</select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group full">
+          <label>Description</label>
+          <textarea id="${cat}-desc" placeholder="Short description of the product...">${product ? product.desc : ''}</textarea>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Badge Label (optional)</label>
+          <input type="text" id="${cat}-badge" placeholder="e.g. Bestseller, New, Premium" value="${product ? product.badge : ''}" />
+        </div>
+        <div class="form-group">
+          <label>Product Image</label>
+          <div class="img-upload-area" onclick="document.getElementById('${cat}-img-input').click()">
+            <div class="upload-icon">🖼️</div>
+            <div class="upload-text">${isEditing && product.img ? 'Click to change image' : 'Click to upload image'}</div>
+            <div class="upload-hint">JPG, PNG, WEBP supported</div>
+            <input type="file" id="${cat}-img-input" accept="image/*" onchange="previewImage(this, '${cat}-preview')" style="display:none" />
+          </div>
+          ${isEditing && product.img ? `<img src="${product.img}" class="img-preview" id="${cat}-preview" style="display:block;" />` : `<img class="img-preview" id="${cat}-preview" />`}
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn-submit" onclick="saveProduct('${cat}')">${isEditing ? 'Update Product' : 'Add Product'}</button>
+        ${isEditing ? `<button class="btn-cancel" onclick="cancelEdit('${cat}')">Cancel</button>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function renderList(cat) {
+  const products = getProducts(cat);
+  const listEl = document.getElementById('list-' + cat);
+
+  if (products.length === 0) {
+    listEl.innerHTML = `<div class="empty-msg"><div class="empty-icon">📭</div>No products yet. Add your first one above!</div>`;
+    return;
+  }
+
+  listEl.innerHTML = products.map(p => `
+    <div class="admin-product-card">
+      ${p.img
+        ? `<img src="${p.img}" class="admin-card-img" alt="${p.name}" />`
+        : `<div class="admin-card-img-placeholder">🖼️</div>`
+      }
+      <div class="admin-card-info">
+        <div class="admin-card-tag">${p.tag}</div>
+        <div class="admin-card-name">${p.name}</div>
+        <div class="admin-card-desc">${p.desc}</div>
+        <div class="admin-card-actions">
+          <button class="btn-edit" onclick="startEdit('${cat}', '${p.id}')">Edit</button>
+          <button class="btn-delete" onclick="deleteProduct('${cat}', '${p.id}')">Delete</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── SAVE / EDIT / DELETE ──
+function previewImage(input, previewId) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = document.getElementById(previewId);
+    img.src = e.target.result;
+    img.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function saveProduct(cat) {
+  const name  = document.getElementById(cat + '-name').value.trim();
+  const tag   = document.getElementById(cat + '-tag').value;
+  const desc  = document.getElementById(cat + '-desc').value.trim();
+  const badge = document.getElementById(cat + '-badge').value.trim();
+  const imgInput = document.getElementById(cat + '-img-input');
+  const editId = document.getElementById(cat + '-edit-id').value;
+
+  if (!name) return showToast('Please enter a product name.', true);
+
+  const products = getProducts(cat);
+
+  if (editId) {
+    // editing
+    const idx = products.findIndex(p => p.id === editId);
+    if (idx === -1) return;
+    const existing = products[idx];
+
+    if (imgInput.files[0]) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        products[idx] = { ...existing, name, tag, desc, badge, img: e.target.result };
+        saveProducts(cat, products);
+        editingId[cat] = null;
+        renderCategory(cat);
+        updateStats();
+        showToast('Product updated!');
+      };
+      reader.readAsDataURL(imgInput.files[0]);
+    } else {
+      products[idx] = { ...existing, name, tag, desc, badge };
+      saveProducts(cat, products);
+      editingId[cat] = null;
+      renderCategory(cat);
+      updateStats();
+      showToast('Product updated!');
+    }
+  } else {
+    // new product
+    const newProduct = { id: Date.now().toString(), name, tag, desc, badge, img: '' };
+    if (imgInput.files[0]) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        newProduct.img = e.target.result;
+        products.push(newProduct);
+        saveProducts(cat, products);
+        renderCategory(cat);
+        updateStats();
+        showToast('Product added!');
+      };
+      reader.readAsDataURL(imgInput.files[0]);
+    } else {
+      products.push(newProduct);
+      saveProducts(cat, products);
+      renderCategory(cat);
+      updateStats();
+      showToast('Product added!');
+    }
+  }
+}
+
+function startEdit(cat, id) {
+  editingId[cat] = id;
+  renderCategory(cat);
+  document.getElementById('form-' + cat).scrollIntoView({ behavior: 'smooth' });
+}
+
+function cancelEdit(cat) {
+  editingId[cat] = null;
+  renderCategory(cat);
+}
+
+function deleteProduct(cat, id) {
+  if (!confirm('Delete this product? This cannot be undone.')) return;
+  const products = getProducts(cat).filter(p => p.id !== id);
+  saveProducts(cat, products);
+  renderCategory(cat);
+  updateStats();
+  showToast('Product deleted.');
+}
+
+// ── TOAST ──
+function showToast(msg, isError = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+// ── INIT ──
+function initAdmin() {
+  updateStats();
+}
+</script>
+
+</body>
+</html>
